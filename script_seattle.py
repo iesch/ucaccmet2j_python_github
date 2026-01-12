@@ -3,13 +3,15 @@
 #Imports
 import json
 
-with open ('precipitation.json', encoding='utf-8') as file :
-    data = json.load(file)
+with open ('precipitation.json', encoding='utf-8') as file :        
+    data = json.load(file)          #reading in the JSON file
 
-measurements_seattle = []
+measurements_seattle = []       #creating an empty list to store the measurements from Seattle
 for measurement in data :
-    if measurement['station'] == 'GHCND:US1WAKG0038' :
-        print(measurement)
+    if measurement['station'] == 'GHCND:US1WAKG0038' :      #this if-statement checks which measurements are from Seattle
+        measurements_seattle.append(measurement)        #adding the Seattle measurements to the list
 
+
+    
 
    
