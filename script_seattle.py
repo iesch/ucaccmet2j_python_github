@@ -3,32 +3,36 @@
 # Imports
 import json
 
-# Opening and reading the files
+# Opening the data file
 with open ('precipitation.json', encoding='utf-8') as data_file :        
     data = json.load(data_file)          #reading in the JSON file
 
+# Initializing some stuff
 stations_data = {}
 total_precipitation = 0 
 results_json = {}
 
-with open ('stations.csv') as stations_csv :
-    stations_csv.readline()
-    for line in stations_csv:
+# Opening the stations.csv and formatting the data into a dictionary
+with open ('stations.csv') as stations_csv :    
+    stations_csv.readline()      #discarding the first line
+    for line in stations_csv:       #for-loop to split and strip the data
         stations_split = line.split(',')
         stations_data[stations_split[0]] = {
             'state': stations_split[1],
             'station': stations_split[2].strip()
         }
 
+# Starting a for-loop to loop over each location
 for location in stations_data :
     station = stations_data[location]['station']
+
     # Filtering for values from location
     measurements_location = []       #creating an empty list to store the measurements from Seattle
     for measurement in data :
         if measurement['station'] == station :      #this if-statement checks which measurements are from Seattle
             measurements_location.append(measurement)        #adding the Seattle measurements to the list
 
-    # Creating a dictionary and a list with the months and the total precipitation per month
+    # Creating a dictionary and lists with the months and the total and relative precipitation per month
     monthly_precipitation = {}     #initializing an empty dictionary to store the months and their values
     for measurement_type in measurements_location :
         date = measurement_type['date']         #selecting the dates in the data
@@ -42,12 +46,12 @@ for location in stations_data :
     for month in monthly_precipitation :
         total_monthly_precipitation.append(monthly_precipitation[month])            #adding the values to the list
     total_yearly_precipitation = sum(total_monthly_precipitation)    
-    total_precipitation += total_yearly_precipitation
+    total_precipitation += total_yearly_precipitation       #adding all the yearly precipitation values per station to the total
     relative_monthly_precipitation = []         #initializing a list to store the relative monthly values
     for monthly_value in total_monthly_precipitation :
         relative_monthly_precipitation.append(monthly_value/total_yearly_precipitation)     #calculating the relative values and adding them to the list   
 
-    # Formatting and saving the results in a JSON file
+    # Formatting the results
     results_json[location] = {        
             'station': station,
             'state': stations_split[1],
@@ -61,6 +65,6 @@ for location in results_json :
     relative_yearly_precipitation = results_json[location]['total_yearly_precipitation']/total_precipitation
     results_json[location]['relative yearly precipitation'] = relative_yearly_precipitation
 
-print(total_precipitation)
+# Saving the results to a JSON file
 with open('results.json', 'w', encoding='utf-8') as results: 
     json.dump(results_json, results, indent=4)
