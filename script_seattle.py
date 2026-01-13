@@ -3,17 +3,28 @@
 # Imports
 import json
 
-# Opening and reading the file
-with open ('precipitation.json', encoding='utf-8') as file :        
-    data = json.load(file)          #reading in the JSON file
+# Opening and reading the files
+with open ('precipitation.json', encoding='utf-8') as data_file :        
+    data = json.load(data_file)          #reading in the JSON file
 
-# Filtering for values from Seattle
+stations_data = {}
+with open ('stations.csv') as stations_csv :
+    stations_csv.readline()
+    for line in stations_csv:
+        #stations_strip = stations_data.strip
+        stations_split = line.split(',')
+        stations_data[stations_split[0]] = {
+            'state': stations_split[1],
+            'station': stations_split[2]
+        }
+print(stations_data)
+    # Filtering for values from Seattle
 measurements_seattle = []       #creating an empty list to store the measurements from Seattle
 for measurement in data :
     if measurement['station'] == 'GHCND:US1WAKG0038' :      #this if-statement checks which measurements are from Seattle
         measurements_seattle.append(measurement)        #adding the Seattle measurements to the list
 
-# Creating a dictionary and a list with the months and the total precipitation per month
+    # Creating a dictionary and a list with the months and the total precipitation per month
 monthly_precipitation = {}     #initializing an empty dictionary to store the months and their values
 for measurement_type in measurements_seattle :
     date = measurement_type['date']         #selecting the dates in the data
@@ -23,24 +34,24 @@ for measurement_type in measurements_seattle :
         monthly_precipitation[date_split[1]] = 0
     monthly_precipitation[date_split[1]] += values      #adding the values to the corresponding key (the month)
 
-total_monthly_precipitation = []    #initializing a list to store the total monthly precipitation values
+total_monthly_precipitation = []        #initializing a list to store the total monthly precipitation values
 for month in monthly_precipitation :
-    total_monthly_precipitation.append(monthly_precipitation[month]) #adding the values to the list
+    total_monthly_precipitation.append(monthly_precipitation[month])            #adding the values to the list
 total_yearly_precipitation = sum(total_monthly_precipitation)    
 
-relative_monthly_precipitation = []
+relative_monthly_precipitation = []         #initializing a list to store the relative monthly values
 for monthly_value in total_monthly_precipitation :
-    relative_monthly_precipitation.append(monthly_value/total_yearly_precipitation)
-print(relative_monthly_precipitation)    
+    relative_monthly_precipitation.append(monthly_value/total_yearly_precipitation)     #calculating the relative values and adding them to the list
+#print(relative_monthly_precipitation)    
 
-# Formatting and saving the results in a JSON file
+    # Formatting and saving the results in a JSON file
 results_Seattle = {'Seattle' : {        
-    'station': 'GHCND:US1WAKG0038',
-    'state': 'WA',
-    'total_monthly_precipitation': total_monthly_precipitation, 
-    'total_yearly_precipitation' : total_yearly_precipitation,
-    'relative_monthly_precipitation' : relative_monthly_precipitation}
-}
+        'station': 'GHCND:US1WAKG0038',
+        'state': 'WA',
+        'total_monthly_precipitation': total_monthly_precipitation, 
+        'total_yearly_precipitation' : total_yearly_precipitation,
+        'relative_monthly_precipitation' : relative_monthly_precipitation}
+    }
 
 with open('results.json', 'a', encoding='utf-8') as results: 
     json.dump(results_Seattle, results, indent=4)
