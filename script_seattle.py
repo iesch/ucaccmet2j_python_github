@@ -9,6 +9,7 @@ with open ('precipitation.json', encoding='utf-8') as data_file :
 
 stations_data = {}
 total_precipitation = 0 
+results_json = {}
 
 with open ('stations.csv') as stations_csv :
     stations_csv.readline()
@@ -16,14 +17,15 @@ with open ('stations.csv') as stations_csv :
         stations_split = line.split(',')
         stations_data[stations_split[0]] = {
             'state': stations_split[1],
-            'station': stations_split[2]
+            'station': stations_split[2].strip()
         }
 
 for location in stations_data :
+    station = stations_data[location]['station']
     # Filtering for values from location
     measurements_location = []       #creating an empty list to store the measurements from Seattle
     for measurement in data :
-        if measurement['station'] == stations_split[2] :      #this if-statement checks which measurements are from Seattle
+        if measurement['station'] == station :      #this if-statement checks which measurements are from Seattle
             measurements_location.append(measurement)        #adding the Seattle measurements to the list
 
     # Creating a dictionary and a list with the months and the total precipitation per month
@@ -46,19 +48,19 @@ for location in stations_data :
         relative_monthly_precipitation.append(monthly_value/total_yearly_precipitation)     #calculating the relative values and adding them to the list   
 
     # Formatting and saving the results in a JSON file
-    results_json = {stations_split[0] : {        
-            'station': stations_split[2],
+    results_json[location] = {        
+            'station': station,
             'state': stations_split[1],
             'total_monthly_precipitation': total_monthly_precipitation, 
             'total_yearly_precipitation' : total_yearly_precipitation,
             'relative_monthly_precipitation' : relative_monthly_precipitation}
-            }
+            
     
-    # Calculating the relative yearly precipitation and adding it to the results dictionary
-    for stations_split[0] in results_json :
-        relative_yearly_precipitation = results_json[stations_split[0]]['total_yearly_precipitation']/total_precipitation
-        results_json[stations_split[0]]['relative yearly precipitation'] = relative_yearly_precipitation
+# Calculating the relative yearly precipitation and adding it to the results dictionary
+for location in results_json :
+    relative_yearly_precipitation = results_json[location]['total_yearly_precipitation']/total_precipitation
+    results_json[location]['relative yearly precipitation'] = relative_yearly_precipitation
 
 print(total_precipitation)
-with open('results.json', 'a', encoding='utf-8') as results: 
+with open('results.json', 'w', encoding='utf-8') as results: 
     json.dump(results_json, results, indent=4)
