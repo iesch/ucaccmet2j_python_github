@@ -18,5 +18,6 @@ for measurement_type in measurements_seattle :
     date_split = date.split('-')
     value = measurement_type['value']
     if date_split[1] not in months :
-        months[date_split[1]] = True
-          
+        months[date_split[1]] = []
+    months[date_split[1]].append(value)
+
