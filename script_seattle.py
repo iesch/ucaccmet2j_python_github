@@ -1,6 +1,6 @@
-## Title
+## Does it always rain in Seattle? ##
 
-#   Imports
+# Imports
 import json
 
 # Opening and reading the file
@@ -26,13 +26,20 @@ for measurement_type in measurements_seattle :
 total_monthly_precipitation = []    #initializing a list to store the total monthly precipitation values
 for month in monthly_precipitation :
     total_monthly_precipitation.append(monthly_precipitation[month]) #adding the values to the list
-print(total_monthly_precipitation)
+total_yearly_precipitation = sum(total_monthly_precipitation)    
+
+relative_monthly_precipitation = []
+for monthly_value in total_monthly_precipitation :
+    relative_monthly_precipitation.append(monthly_value/total_yearly_precipitation)
+print(relative_monthly_precipitation)    
 
 # Formatting and saving the results in a JSON file
 results_Seattle = {'Seattle' : {        
     'station': 'GHCND:US1WAKG0038',
     'state': 'WA',
-    'total_monthly_precipitation': total_monthly_precipitation }
+    'total_monthly_precipitation': total_monthly_precipitation, 
+    'total_yearly_precipitation' : total_yearly_precipitation,
+    'relative_monthly_precipitation' : relative_monthly_precipitation}
 }
 
 with open('results_prcp.json', 'a', encoding='utf-8') as results: 
