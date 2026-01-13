@@ -42,5 +42,5 @@ results_Seattle = {'Seattle' : {
     'relative_monthly_precipitation' : relative_monthly_precipitation}
 }
 
-with open('results_prcp.json', 'a', encoding='utf-8') as results: 
+with open('results.json', 'a', encoding='utf-8') as results: 
     json.dump(results_Seattle, results, indent=4)
